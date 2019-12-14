@@ -1,0 +1,18 @@
+//
+//  module.modulemap
+//  
+//
+//  14.12.19.
+//
+
+module CSwissEphemeris {
+    umbrella header "swephexp.h"
+    
+    export *
+        module * { export * }
+    
+    explicit module defines {
+        header "sweodef.h"
+        export *
+    }
+}
