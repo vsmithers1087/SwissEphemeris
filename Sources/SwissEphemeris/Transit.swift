@@ -7,68 +7,45 @@
 
 import Foundation
 
-/// Calculates the start, end and approximate exact time of a planet aspect.
+/// Calculates the start, and end of a celestial pair aspect.
 public struct Transit {
 	
-	let subject: PlanetCoordinate
-	let object: PlanetCoordinate
-	let orb: Double
+	/// The beginning of the transit.
+	public let start: Date
+	/// The end of the transit.
+	public let end: Date
 	
-	public var startDate: Date {
-		edgeDate(isFuture: false)
-	}
-	
-	public var endDate: Date {
-		edgeDate(isFuture: true)
-	}
-	
-	public var exactDate: Date {
-		calculateExact()
-	}
-	
-	public init(subject: PlanetCoordinate, object: PlanetCoordinate, orb: Double) {
-		self.subject = subject
-		self.object = object
-		self.orb = orb
-	}
-	
-	private func edgeDate(isFuture: Bool) -> Date {
-		var date = subject.date
-		var subject = self.subject
-		var object = self.object
-		var planetAspect: PlanetAspect? = PlanetAspect(subjectDegree: subject.degree,
-													   objectDegree: object.degree,
-													   orb: orb)
-		let minute: TimeInterval = isFuture ? 60 : -60
-		while planetAspect?.aspect != nil {
-			date = date.addingTimeInterval(minute * 60)
-			subject = PlanetCoordinate(planet: subject.planet, date: date)
-			object = PlanetCoordinate(planet: object.planet, date: date)
-			planetAspect = PlanetAspect(subjectDegree: subject.degree,
-										objectDegree: object.degree,
-										orb: orb)
+	/// Creates an optional `Transit`. If the `Pair` is not in aspect, then `nil` is returned.
+	/// - Parameters:
+	///   - pair: The pair of celestial bodies in potential aspect.
+	///   - date: The date of the transit.
+	///   - orb: The number of degrees allowed for the aspect to differ from exactness.
+	public init?<T, U>(pair: Pair<T, U>, date: Date, orb: Double) {
+		start = Self.date(pair: pair, date: date, orb: orb, timeInterval: -60 * 60)
+		end = Self.date(pair: pair, date: date, orb: orb, timeInterval: 60 * 60)
+		if start == date && end == date {
+			return nil
 		}
-		return date
 	}
+}
+
+extension Transit {
 	
-	private func calculateExact() -> Date {
-		var date = subject.date
-		var subject = self.subject
-		var object = self.object
-		var planetAspect = PlanetAspect(subjectDegree: subject.degree,
-										objectDegree: object.degree,
-										orb: orb)
-		let minute: TimeInterval = planetAspect.direction == .applying ? 60 : -60
-		var remainder = abs(planetAspect.aspect?.remainder ?? 0)
-		while remainder > 0.1  {
-			date = date.addingTimeInterval(minute * 60)
-			subject = PlanetCoordinate(planet: subject.planet, date: date)
-			object = PlanetCoordinate(planet: object.planet, date: date)
-			planetAspect = PlanetAspect(subjectDegree: subject.degree,
-										objectDegree: object.degree,
-										orb: orb)
-			remainder = abs(planetAspect.aspect?.remainder ?? 0)
+	/// A helper method for determining a date, when the transit is no longer.
+	/// - Parameters:
+	///   - pair: The pair of celestial bodies in potential aspect.
+	///   - date: The date of the transit.
+	///   - orb: The number of degrees allowed for the aspect to differ from exactness.
+	///   - timeInterval: The time interval that determines whether pairs are still in aspect.
+	/// - Returns: The date when the pair are no longer in aspect.
+	private static func date<T, U>(pair: Pair<T, U>, date: Date, orb: Double, timeInterval: Double) -> Date {
+		var aspect: Aspect? = Aspect(pair: pair, date: date, orb: orb)
+		var modDate = date
+		while aspect != nil {
+			modDate = modDate.addingTimeInterval(timeInterval)
+			aspect = Aspect(pair: pair, date: modDate, orb: orb)
 		}
 		return date
 	}
 }
+

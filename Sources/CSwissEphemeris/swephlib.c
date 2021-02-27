@@ -4480,25 +4480,21 @@ void swi_open_trace(char *serr)
 }
 #endif
 
-//MARK: - Extending for Swift Wrapper 
+//MARK: - Extending for Swift Wrapper
 
-double CALL_CONV getPlanetCoordinate(double julianDate, int32 planet) {
-    char *sp, sdate[AS_MAXCH], serr[AS_MAXCH];
-    double tjd_ut, x2[6];
-    int32 iflag, planetCoordinate;
-
-    swe_set_ephe_path(NULL);
-    iflag = SEFLG_SWIEPH;
-    
-    planetCoordinate = swe_calc_ut(julianDate, planet, iflag, x2, serr);
-    
-    if (planetCoordinate < 0)
-        printf("error: %s\n", serr);
-    
-    return x2[0];
+CALL_CONV void coordinate(double julian_date, int32 planet, double * data_pointer) {
+	char serr[AS_MAXCH];
+	int32 iflag = SEFLG_SPEED, planetCoordinate;
+	
+	swe_set_ephe_path(NULL);
+	
+	planetCoordinate = swe_calc_ut(julian_date, planet, iflag, data_pointer, serr);
+	
+	if (planetCoordinate < 0)
+		printf("error: %s\n", serr);
 }
 
-CALL_CONV void setHouseSystem(double julianDate, double latitude, double longitude, double * ascPointer, double * cuspPointer) {
+CALL_CONV void set_house_system(double julian_date, double latitude, double longitude, int house_system, double * asc_pointer, double * cusp_pointer) {
     int houses;
-    houses = swe_houses(julianDate, latitude, longitude, 0, cuspPointer, ascPointer);
+    houses = swe_houses(julian_date, latitude, longitude, house_system, cusp_pointer, asc_pointer);
 }

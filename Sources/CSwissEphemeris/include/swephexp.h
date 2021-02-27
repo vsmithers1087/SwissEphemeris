@@ -986,6 +986,6 @@ ext_def( char *) swe_cs2degstr(CSEC t, char *a);
 
 //MARK: - Extending for Swift Wrapper
 
-ext_def (double) getPlanetCoordinate(double julianDate, int32 planet);
+CALL_CONV void coordinate(double julian_date, int32 planet, double * data_pointer);
 
-void setHouseSystem(double julianDate, double latitude, double longitude, double * ascPointer, double * cuspPointer);
+void set_house_system(double julian_date, double latitude, double longitude, int house_system, double * asc_pointer, double * cusp_pointer);
