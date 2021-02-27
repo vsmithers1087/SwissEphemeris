@@ -27,36 +27,73 @@ I have been extending existing C files to write new methods that call existing C
 
 `//MARK: - Extending for Swift Wrapper`
 
-#### Usage
+### Usage
 
-To get the tropical zodiac position as well as the precise degree of planet.
+#### Astronomical and Astrological Coordinates
+
+To get coordinate data for a planet, moon or lunar node create a `Coordinate` where `T` is the type of IPL body category. This type contains more than astrological data, including the latitudinal and longitudinal speed, and distance in AU for any planetary body.
 
 ```swift
-/// Create a date
 let now = Date()
-/// Create an instance of `PlanetCoordinate` with a planet
-let moonCoordinate = PlanetCoordinate(planet: .moon, date: now)
-/// Get the precise degree of the planet 
-let degree = moonCoordinate.degree
-/// Get the formatted position mapped to the tropical zodiac
-let formatted = moonCoordinate.tropicalZodiacPosition.formatted
-/// 13 Degrees Sagittarius ♐︎ 46' 49''"
+// Astronomical and astrological information for the moon at this point in time.
+let moonCoordinate = Coordinate<Planet>(planet: .moon, date: now)
+// The moon's longitude.
+moonCoordinate.longitude
+// The moon's latitude.
+moonCoordinate.latitude
+// The distance in AU from the earth.
+moonCoordinate.distance
+// The speed in longitude (deg/day).
+moonCoordinate.speedLongitude
+// The speed in latitude (deg/day).
+moonCoordinate.speedLatitude
+// The speed in distance (AU/day).
+moonCoordinate.speedDistance
 ```
-To get the Placidus house layout for date and location.
+Astrological information about the tropical zodiacal location of a celestial body is also available from the same `Coordinate` type.
+
+```swift
+// Date for 12.14.2019 13:39 UT/GMT
+let date = Date(timeIntervalSince1970: 598023482.487818)
+// Astronomical and astrological information for the sun on December 14th 2019.
+let sunCoordinate = Coordinate<Planet>(planet: .sun, date: date)
+// This will return 21 Degrees Sagittarius ♐︎ 46' 49''.
+sunCoordinate.formatted
+// It is also possible to get the degree, minute and second as properties of the Coordinate.
+let degree = sunCoordinate.degree
+let minute = sunCoordinate.minute
+let second = sunCoordinate.second
+```
+#### Astrological Aspect
+
+To create an aspect between two `CelestialBody`  types use  `Aspect`.  `Transit` contains start and end date properties of the transit with an accuracy of one hour.
+
+```swift
+// Create a pair of celestial bodies.
+let moonTrueNode = Pair<Planet, LunarNode>(a: .moon, b: .trueNode)
+// Transit contains start and end date properties.
+let transit = Transit(pair: moonTrueNode, date: Date(), orb: 8.0)
+```
+####  Astrological Houses
+
+To get the house layout for a date, location, and house system create a `HouseCusps`. The `HouseSystem` determines the type of astrological house system that is set. All house `Cusp` properties can be used to create an `Aspect` with a `CelestialBody`.
 
 ```swift
 /// Create a date and location
 let now = Date()
 let latitude: Double = 37.5081153
 let longitude: Double = -122.2854528
-/// Initialize with date, latitude and longitude
-/// All house cusps, Ascendent, Descendent, MC, and IC are properties on `houses`
-let houses =  PlacidusHouses(date: date, latitude: latitude, longitude: longitude)
-/// Get the formatted position 
-let ascendentFormatted = houses.ascendent.tropicalZodiacPosition.formatted
+/// All house cusps, Ascendent, and MC are properties on `houses`.
+let houses = HouseCusps(date: date, latitude: latitude, longitude: longitude, houseSystem: .placidus)
+/// Get the formatted astrological position.
+let ascendentFormatted = houses.ascendent.formatted
 /// Or the precise degree
 let degree = houses.ascendent.degree
 ```
+
+#### IPL Numbering
+
+The `enum` types for `Planet`,  and `LunarNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as astroids and stars still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
 
 ### Testing 
 

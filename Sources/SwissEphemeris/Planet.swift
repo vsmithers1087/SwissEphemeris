@@ -7,7 +7,8 @@
 
 import Foundation
 
-/// Models the seven planets in tradtional astrology
+/// Models the nine celestial objects usually considered to be planets in astrological systems.
+/// The the raw `Int32` values map to the IPL planetary bodies.
 public enum Planet: Int32 {
     case sun
     case moon
@@ -20,6 +21,7 @@ public enum Planet: Int32 {
     case neptune
     case pluto
     
+	/// The symbol commonly associated with the planet.
     public var symbol: String {
         switch self {
         case .sun:
@@ -45,31 +47,7 @@ public enum Planet: Int32 {
         }
     }
     
-    public var name: String {
-        switch self {
-        case .sun:
-            return "Sun"
-        case .moon:
-            return "Moon"
-        case .mercury:
-            return "Mercury"
-        case .venus:
-            return "Venus"
-        case .mars:
-            return "Mars"
-        case .jupiter:
-            return "Jupiter"
-        case .saturn:
-            return "Saturn"
-        case .uranus:
-            return "Uranus"
-        case .neptune:
-            return "Neptune"
-        case .pluto:
-            return "Pluto"
-        }
-    }
-    
+	/// The name of the planet formatted with the `symbol`.
     public var formatted: String {
         switch self {
         case .sun:
@@ -96,4 +74,8 @@ public enum Planet: Int32 {
     }
 }
 
-extension Planet: CaseIterable {}
+// MARK: CelestialBody Conformance
+
+extension Planet: CelestialBody {
+	public var value: Int32 { rawValue }
+}

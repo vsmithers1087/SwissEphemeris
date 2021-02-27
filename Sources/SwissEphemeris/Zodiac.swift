@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Models the 12 zodiac signs
+/// Models the 12 zodiac signs commonly used in astrological systems.
 public enum Zodiac: Int {
     case aries
     case taurus
@@ -22,7 +22,8 @@ public enum Zodiac: Int {
     case aquarius
     case pisces
     
-    public var formattedShort: String {
+	/// The astrological glyph commonly associated with the sign.
+    public var symbol: String {
         switch self {
         case .aries:
             return "♈︎"
@@ -51,6 +52,7 @@ public enum Zodiac: Int {
         }
     }
     
+	/// The name of the sign formatted with the `symbol`.
     public var formatted: String {
         switch self {
         case .aries:
