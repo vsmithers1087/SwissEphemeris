@@ -38,7 +38,7 @@ public struct Coordinate<T: CelestialBody> {
 	public init(body: T, date: Date) {
 		self.body = body
 		self.date = date
-		coordinate(date.julianDate(), body.value, pointer)
+		swe_calc_ut(date.julianDate(), body.value, SEFLG_SPEED, pointer, nil)
 		longitude = pointer[0]
 		latitude = pointer[1]
 		distance = pointer[2]
