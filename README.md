@@ -14,18 +14,30 @@ This project is under the licensing model `a) GNU public license version 2 or la
 
 At the moment the JPL-Ephemeris files that are included are the following. 
 
-| File          | Time Period    | Type    |
-| ------------- |:--------------:| -----:  |
-| semo_18.se1   | 1800 - 2399 AD | Moon    |
-| sepl_18.se1   | 1800 - 2399 AD | Planet  |
+| Type        	 | File Numbering               | Time Period  					         |
+|---------------|----------------------------|------------------------------------------------|
+| Planet  		 | seplm60 - seplm132      | 11 Aug 13000 BCE – Jan 16800 CE      |
+|                       | seplm06 - seplm54         |                                                                 |	
+|                       | sepl0 - sepl162               |                                                                       |	
+| Asteroid         | seasm06 - seasm54       |  5401 BCE - 4800 CE – 5399 CE     	        |
+| 		         | seas_06 - seas_48         |    									|
+| Moon             | semom60 - semom132 |  11 Aug 13000 BCE – Jan 16800 CE             |
+|                       | semom06 - semom54    |                                                                        |
+|                       | semo_00 - semo_162     |                                                                       |
 
-To extend the time period or the types of celestial bodies covered, the `.se1` files are contained in a `Sources/CSwissEphemeris/include`.
+### Setting the Ephemeris Files
 
-### Wrapper 
+It is crucial that the path to the JPL-Ephemeris files is set at runtime before getting any astrological data.  Various documentation and examples that exist out there have this step as optional, but the functionality of  this library will be greatly limited if not taken. Since Swift tools version 5.3 it is possible to [bundle resources as a part of a Swift package](https://developer.apple.com/documentation/swift_packages/bundling_resources_with_a_swift_package). This allows adding the JPL file as a resource to the package, and setting the resource path as the path to the ephemeris files. 
 
-I have been extending existing C files to write new methods that call existing C code, without modifying what is part of the original source code. These new methods interface with the SwissEphemeris source files. I intend to keep the bridging methods separate, and this division is marked by:
+This method should be called once at the entry point of your app. By default, the `Bundle.module` resource path of this package that holds the JPL files is set as the ephemeris path. However, It is also possible to pass in `path` parameter to set a different ephemeris files that you have bundled in your app.
 
-`//MARK: - Extending for Swift Wrapper`
+```swift
+// Sets ephemeris path to the JPL resources.
+JPLFileManager.setEphemerisPath()
+// Set a path to JPL files added to your app bundle.
+let path = "URL to your ephemeris files"
+JPLFileManager.setEphemerisPath(path: )
+```
 
 ### Usage
 
@@ -93,7 +105,7 @@ let degree = houses.ascendent.degree
 
 #### IPL Numbering
 
-The `enum` types for `Planet`,  and `LunarNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as astroids and stars still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
+The `enum` types for `Planet`, `Asteroid`, and `LunarNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as stars as fictitious points still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
 
 ### Testing 
 

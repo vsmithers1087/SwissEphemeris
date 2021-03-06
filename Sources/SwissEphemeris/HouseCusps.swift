@@ -60,11 +60,7 @@ public struct HouseCusps {
 				longitude: Double,
 				houseSystem: HouseSystem) {
         self.date = date
-        set_house_system(date.julianDate(),
-                       latitude,
-                       longitude,
-					   houseSystem.rawValue,
-                       ascendentPointer, cuspPointer)
+		swe_houses(date.julianDate(), latitude, longitude, houseSystem.rawValue, cuspPointer, ascendentPointer);
 		ascendent = Cusp(value: ascendentPointer[0])
 		midHeaven = Cusp(value: ascendentPointer[1])
 		first = Cusp(value: cuspPointer[1])
