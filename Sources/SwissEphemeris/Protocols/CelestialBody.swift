@@ -9,6 +9,7 @@ import Foundation
 
 /// Models a planet, moon, astroid, star or celestial body both real or imaginary.
 public protocol CelestialBody: CaseIterable {
+	associatedtype DateType
 	/// The IPL body number.
-	var value: Int32 { get }
+	var value: DateType { get }
 }

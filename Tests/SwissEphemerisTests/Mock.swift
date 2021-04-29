@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import XCTest
+
 @testable import SwissEphemeris
 
 struct Mock {
@@ -38,5 +40,11 @@ struct Mock {
 										minute: minute,
 										second: second)
 		return Calendar.current.date(from: components)
+	}
+	
+	static func date(from timestamp: String) throws -> Date {
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+		return try XCTUnwrap(dateFormatter.date(from:timestamp))
 	}
 }

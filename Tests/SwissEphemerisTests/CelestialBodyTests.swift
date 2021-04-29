@@ -1,7 +1,7 @@
 import XCTest
 @testable import SwissEphemeris
 
-final class SwissEphemerisTests: XCTestCase {
+final class CelestialBodyTests: XCTestCase {
 	
 	override func setUpWithError() throws {
 		JPLFileManager.setEphemerisPath()
@@ -19,11 +19,19 @@ final class SwissEphemerisTests: XCTestCase {
         XCTAssertEqual(Int(sunCoordinate.second), 49)
     }
 	
+	func testMoonSiderealCoordinate() {
+		let moonCoordinate = SiderealCoordinate(coordinate: Coordinate<Planet>(body: .moon, date: Mock.date),
+												ayanamshaValue: Ayanamsha()(for: Mock.date))
+		XCTAssertEqual(Int(moonCoordinate.value), 295)
+		XCTAssertEqual(moonCoordinate.sign, .capricorn)
+		XCTAssertEqual(moonCoordinate.formatted, "25 Degrees Capricorn ♑︎ 3' 16''")
+		XCTAssertEqual(Int(moonCoordinate.degree), 25)
+		XCTAssertEqual(Int(moonCoordinate.minute), 3)
+		XCTAssertEqual(Int(moonCoordinate.second), 16)
+	}
+	
 	func testAstroids() throws {
-		let timestamp = "2021-03-01T12:31:00-0800"
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-		let date = try XCTUnwrap(dateFormatter.date(from:timestamp))
+		let date = try XCTUnwrap(Mock.date(from: "2021-03-01T12:31:00-0800"))
 		let chiron = Coordinate<Astroid>(body: .chiron, date: date)
 		XCTAssertEqual(Int(chiron.degree), 7)
 		XCTAssertEqual(chiron.sign, .aries)
@@ -233,7 +241,97 @@ final class SwissEphemerisTests: XCTestCase {
         XCTAssertEqual(Station<Planet>(coordinate: Coordinate(body: .mercury, date: Mock.date)), .retrograde)
         XCTAssertEqual(Station<Planet>(coordinate: Coordinate(body: .jupiter, date: Mock.date)), .retrograde)
     }
-    
+	
+	func testAyanamsha() throws {
+		let date = try XCTUnwrap(Mock.date(from: "2021-03-09T12:31:00-0800"))
+		let ayanamsha = Ayanamsha()(for: date)
+		XCTAssertEqual((ayanamsha * 100).rounded() / 100, 25.04)
+	}
+	
+	func testPlanetRisingTime() throws {
+		let timestamp = "2021-03-14"
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd"
+		let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
+		let sunrise = RiseTime<Planet>(date: date,
+									   body: .sun,
+									   longitude: 13.41053,
+									   latitude: 52.52437,
+									   altitude: 0)
+		XCTAssertEqual(sunrise.date?.description, "2021-03-14 07:22:32 +0000")
+		let sunriseSantaCruz = RiseTime<Planet>(timeZone: TimeZone(identifier: "America/Los_Angeles")!,
+												date: date,
+												body: .sun,
+												longitude: -122.0297222,
+												latitude: 36.9741667,
+												altitude: 0)
+		XCTAssertEqual(sunriseSantaCruz.date?.description, "2021-03-14 07:19:44 +0000")
+		let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-15"))
+		let moonRiseNYC = RiseTime<Planet>(timeZone: TimeZone(identifier: "America/New_York")!,
+										   date: dateB,
+										   body: .moon,
+										   longitude: -73.935242,
+										   latitude: 40.730610,
+										   altitude: 0)
+		XCTAssertEqual(moonRiseNYC.date?.description, "2021-03-15 08:25:55 +0000")
+	}
+	
+	func testPlanetSettingTime() throws {
+		let timestamp = "2021-03-15"
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd"
+		let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
+		let moonSet = SetTime<Planet>(date: date,
+									  body: .moon,
+									  longitude: 13.41053,
+									  latitude: 52.52437)
+		XCTAssertEqual(moonSet.date?.description, "2021-03-15 21:25:58 +0000")
+		let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
+		let sunsetTokyo = SetTime<Planet>(timeZone: TimeZone(identifier: "Asia/Tokyo")!,
+										 date: dateB,
+										 body: .sun,
+										 longitude: 139.69171,
+										 latitude: 35.6895)
+		XCTAssertEqual(sunsetTokyo.date?.description, "2021-03-16 17:49:34 +0000")
+	}
+	
+	func testLunarPhase() throws {
+		let date = try Mock.date(from: "2021-03-21T11:11:00-0000")
+		let lunation = Lunation(date: date)
+		XCTAssertEqual((lunation.percentage * 100).rounded() / 100, 0.49)
+		XCTAssertEqual(lunation.phase, .waxingCrescent)
+		var lunationB = Lunation(date: try Mock.date(from: "2021-04-12T01:11:00-0001"))
+		XCTAssertEqual((lunationB.percentage * 100).rounded() / 100, 0)
+		XCTAssertEqual(lunationB.phase, .new)
+		let interval: TimeInterval = 60 * 60 * 24
+		var count = 0
+		repeat {
+			lunationB = Lunation(date: lunationB.date.addingTimeInterval(interval))
+			count += 1
+		} while lunationB.phase != .full
+		// Count from new to full
+		XCTAssertEqual(count, 14)
+		repeat {
+			lunationB = Lunation(date: lunationB.date.addingTimeInterval(interval))
+			count += 1
+		} while lunationB.phase != .new
+		// Count from full to new
+		XCTAssertEqual(count, 29)
+	}
+		
+	func testLunarMansion() throws {
+		var date = try Mock.date(from: "2021-04-12T01:11:00-0001")
+		let interval: TimeInterval = 60 * 60 * 12
+		var formatted = Set<String>()
+		for _ in 0...56 {
+			let moon = Coordinate<Planet>(body: .moon, date: date)
+			formatted.insert(moon.lunarMansion.formatted)
+			date = date.advanced(by: interval)
+		}
+		// Expect a unique description for each mansion.
+		XCTAssertEqual(formatted.count, 28)
+	}
+	
     func testSpringEquinoxPerformance() {
         measure {
             var coordinate = Coordinate<Planet>(body: .sun, date: Date())
@@ -261,9 +359,18 @@ final class SwissEphemerisTests: XCTestCase {
 			}
 		}
 	}
+	
+	func testSiderealCoordinateEarlyAries() throws {
+		let date = try Mock.date(from: "2021-03-25T01:11:00-0001")
+		let sun = Coordinate<Planet>(body: .sun, date: date)
+		XCTAssertEqual(sun.sign, .aries)
+		let siderealSun = SiderealCoordinate(coordinate: sun)
+		XCTAssertEqual(siderealSun.sign, .pisces)
+	}
 
 	static var allTests = [
 		("testSunZodiacCoordinate",testSunZodiacCoordinate,
+		 "testMoonSiderealCoordinate", testMoonSiderealCoordinate,
 		 "testPlanets", testPlanets,
 		 "testAstroids", testAstroids,
 		 "testZodiac", testZodiac,
@@ -272,8 +379,14 @@ final class SwissEphemerisTests: XCTestCase {
 		 "testHouses", testHouses,
 		 "testAspects", testAspects,
 		 "testPlanetaryStation", testPlanetaryStation,
+		 "testAyanamsha", testAyanamsha,
+		 "testPlanetRisingTime", testPlanetRisingTime,
+		 "testPlanetSettingTime", testPlanetSettingTime,
+		 "testLunarPhase", testLunarPhase,
+		 "testLunarMansion", testLunarMansion,
 		 "testSpringEquinoxPerformance", testSpringEquinoxPerformance,
 		 "testAutumnalEquinoxPerformance", testAutumnalEquinoxPerformance,
-		 "testTransit", testTransit)
+		 "testTransit", testTransit,
+		 "testSiderealCoordinateEarlyAries", testSiderealCoordinateEarlyAries)
 	]
 }
