@@ -30,6 +30,8 @@ public struct Coordinate<T: CelestialBody> {
 	public let speedDistance: Double
 	/// The pointer that holds all values.
 	private let pointer = UnsafeMutablePointer<Double>.allocate(capacity: 6)
+	///
+	private var starPointer: UnsafeMutablePointer<Int8>?
 	
 	/// Creates a `Coordinate`.
 	/// - Parameters:
@@ -38,7 +40,15 @@ public struct Coordinate<T: CelestialBody> {
 	public init(body: T, date: Date) {
 		self.body = body
 		self.date = date
-		swe_calc_ut(date.julianDate(), body.value, SEFLG_SPEED, pointer, nil)
+		switch body.value {
+		case let value as Int32:
+			swe_calc_ut(date.julianDate(), value, SEFLG_SPEED, pointer, nil)
+		case let value as String:
+			starPointer = strdup(value)
+			swe_fixstar2(starPointer, date.julianDate(), SEFLG_SPEED, pointer, nil)
+		default:
+			break
+		}
 		longitude = pointer[0]
 		latitude = pointer[1]
 		distance = pointer[2]
