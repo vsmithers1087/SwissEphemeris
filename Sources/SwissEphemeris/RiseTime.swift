@@ -10,10 +10,14 @@ import Foundation
 import CSwissEphemeris
 
 /// Models the precise rising time for a celestial body.
-public struct RiseTime<T: CelestialBody> {
+public final class RiseTime<T: CelestialBody> {
 	
 	/// The date of the rise.
 	public let date: Date?
+	/// The pointer for the longitude, latitude and altitude.
+	let geoPos = UnsafeMutablePointer<Double>.allocate(capacity: 3)
+	/// The pointer for the time.
+	let time = UnsafeMutablePointer<Double>.allocate(capacity: 1)
 	
 	/// Creates a `RisingTime`.
 	/// - Parameters:
@@ -33,11 +37,9 @@ public struct RiseTime<T: CelestialBody> {
 				altitude: Double,
 				atmosphericPressure: Double = .zero,
 				atmosphericTemperature: Double = .zero) {
-		let geoPos = UnsafeMutablePointer<Double>.allocate(capacity: 3)
 		geoPos[0] = longitude
 		geoPos[1] = latitude
 		geoPos[2] = altitude
-		let time = UnsafeMutablePointer<Double>.allocate(capacity: 1)
 		if let value = body.value as? Int32 {
 			swe_rise_trans(date.julianDate(),
 						   value,
@@ -51,5 +53,10 @@ public struct RiseTime<T: CelestialBody> {
 						   nil)
 		}
 		self.date = Date(julianDate: time[0]).addingTimeInterval(TimeInterval(timeZone.secondsFromGMT()))
+	}
+	
+	deinit {
+		geoPos.deallocate()
+		time.deallocate()
 	}
 }

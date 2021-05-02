@@ -9,7 +9,7 @@ import CSwissEphemeris
 import Foundation
 
 /// Models a house system with a `Cusp` for each house, ascendent and midheaven.
-public struct HouseCusps {
+public final class HouseCusps {
 
     /// The time at which the house system is valid
     public let date: Date
@@ -76,4 +76,9 @@ public struct HouseCusps {
 		eleventh = Cusp(value: cuspPointer[11])
 		twelfth =  Cusp(value: cuspPointer[12])
     }
+	
+	deinit {
+		cuspPointer.deallocate()
+		ascendentPointer.deallocate()
+	}
 }

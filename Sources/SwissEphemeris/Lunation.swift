@@ -10,7 +10,7 @@ import Foundation
 import CSwissEphemeris
 
 /// Models the momentary state of a current lunar phase.
-public struct Lunation {
+public final class Lunation {
 	
 	/// Represents common phases of the moon.
 	public enum Phase: Int {
@@ -75,5 +75,10 @@ public struct Lunation {
 					 nil)
 		percentage = pointerPresent[1]
 		isWaxing = percentage > pointerFuture[1]
+	}
+	
+	deinit {
+		pointerPresent.deallocate()
+		pointerFuture.deallocate()
 	}
 }
