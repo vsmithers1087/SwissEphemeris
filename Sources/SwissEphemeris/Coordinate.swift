@@ -10,7 +10,7 @@ import CSwissEphemeris
 
 
 /// Models a `CelestialBody` point in the sky.
-public struct Coordinate<T: CelestialBody> {
+public final class Coordinate<T: CelestialBody> {
 	
 	/// The type of `CelestialBody`.
 	public let body: T
@@ -30,7 +30,7 @@ public struct Coordinate<T: CelestialBody> {
 	public let speedDistance: Double
 	/// The pointer that holds all values.
 	private let pointer = UnsafeMutablePointer<Double>.allocate(capacity: 6)
-	///
+	/// The pointer that holds values for a star coordinate.
 	private var starPointer: UnsafeMutablePointer<Int8>?
 	
 	/// Creates a `Coordinate`.
@@ -55,6 +55,11 @@ public struct Coordinate<T: CelestialBody> {
 		speedLongitude = pointer[3]
 		speedLatitude = pointer[4]
 		speedDistance = pointer[5]
+	}
+	
+	deinit {
+		pointer.deallocate()
+		starPointer?.deallocate()
 	}
 }
 
