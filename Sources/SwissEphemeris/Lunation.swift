@@ -10,7 +10,7 @@ import Foundation
 import CSwissEphemeris
 
 /// Models the momentary state of a current lunar phase.
-public final class Lunation {
+public struct Lunation {
 	
 	/// Represents common phases of the moon.
 	public enum Phase: Int {
@@ -62,6 +62,10 @@ public final class Lunation {
 	/// Creates a `Lunation`.
 	/// - Parameter date: The exact date for the lunation time.
 	public init(date: Date) {
+		defer {
+			pointerPresent.deallocate()
+			pointerFuture.deallocate()
+		}
 		self.date = date
 		swe_pheno_ut(date.julianDate(),
 					 Planet.moon.rawValue,
@@ -75,10 +79,5 @@ public final class Lunation {
 					 nil)
 		percentage = pointerPresent[1]
 		isWaxing = percentage > pointerFuture[1]
-	}
-	
-	deinit {
-		pointerPresent.deallocate()
-		pointerFuture.deallocate()
 	}
 }

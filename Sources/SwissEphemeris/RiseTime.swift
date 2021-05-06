@@ -10,7 +10,7 @@ import Foundation
 import CSwissEphemeris
 
 /// Models the precise rising time for a celestial body.
-public final class RiseTime<T: CelestialBody> {
+public struct RiseTime<T: CelestialBody> {
 	
 	/// The date of the rise.
 	public let date: Date?
@@ -37,6 +37,10 @@ public final class RiseTime<T: CelestialBody> {
 				altitude: Double,
 				atmosphericPressure: Double = .zero,
 				atmosphericTemperature: Double = .zero) {
+		defer {
+			geoPos.deallocate()
+			time.deallocate()
+		}
 		geoPos[0] = longitude
 		geoPos[1] = latitude
 		geoPos[2] = altitude
@@ -53,10 +57,5 @@ public final class RiseTime<T: CelestialBody> {
 						   nil)
 		}
 		self.date = Date(julianDate: time[0]).addingTimeInterval(TimeInterval(timeZone.secondsFromGMT()))
-	}
-	
-	deinit {
-		geoPos.deallocate()
-		time.deallocate()
 	}
 }
