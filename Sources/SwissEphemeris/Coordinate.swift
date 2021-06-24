@@ -38,18 +38,22 @@ public struct Coordinate<T: CelestialBody> {
 	///   - body: The `CelestialBody` for the placement.
 	///   - date: The date for the location of the coordinate.
 	public init(body: T, date: Date) {
-		defer {
-			charPointer.deallocate()
-			pointer.deallocate()
-		}
+        defer {
+            pointer.deinitialize(count: 6)
+            pointer.deallocate()
+            if let star = body as? FixedStar {
+                charPointer.deinitialize(count: star.rawValue.count)
+                charPointer.deallocate()
+            }
+        }
 		self.body = body
 		self.date = date
 		switch body.value {
 		case let value as Int32:
+            pointer.initialize(repeating: 0, count: 6)
 			swe_calc_ut(date.julianDate(), value, SEFLG_SPEED, pointer, nil)
 		case let value as String:
 			charPointer.initialize(from: value, count: value.count)
-			charPointer[value.count] = 0
 			charPointer = strdup(value)
 			swe_fixstar2(charPointer, date.julianDate(), SEFLG_SPEED, pointer, nil)
 		default:

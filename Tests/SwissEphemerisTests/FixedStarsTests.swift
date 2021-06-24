@@ -81,7 +81,7 @@ final class FixedStarsTests: XCTestCase {
 		let betelgeuse = Coordinate<FixedStar>(body: .betelgeuse, date: Mock.date)
 		XCTAssertEqual(betelgeuse.formatted, "28 Degrees Gemini ♊︎ 35' 16''")
 	}
-	
+  
 	static var allTests = [
 		("testBetelgeuse",testBetelgeuse,
 		 "testPollux", testPollux,

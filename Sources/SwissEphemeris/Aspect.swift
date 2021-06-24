@@ -26,7 +26,7 @@ public enum Aspect: Equatable, Hashable {
 	///   - pair: The two bodies to compare.
 	///   - date: The date of the alignment.
 	///   - orb: The number of degrees allowed for the aspect to differ from exactness.
-	public init?<T, U>(pair: Pair<T, U>, date: Date, orb: Double) {
+    public init?<T, U>(pair: Pair<T, U>, date: Date, orb: Double = 10.0) {
 		let degreeA = Coordinate(body: pair.a, date: date)
 		let degreeB = Coordinate(body: pair.b, date: date)
 		self.init(a: degreeA.value, b: degreeB.value, orb: orb)

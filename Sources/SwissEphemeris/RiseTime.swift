@@ -34,7 +34,7 @@ public struct RiseTime<T: CelestialBody> {
 				body: T,
 				longitude: Double,
 				latitude: Double,
-				altitude: Double,
+                altitude: Double = .zero,
 				atmosphericPressure: Double = .zero,
 				atmosphericTemperature: Double = .zero) {
 		defer {

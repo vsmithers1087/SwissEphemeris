@@ -275,25 +275,25 @@ final class CelestialBodyTests: XCTestCase {
 										   altitude: 0)
 		XCTAssertEqual(moonRiseNYC.date?.description, "2021-03-15 08:25:55 +0000")
 	}
-	
-	func testPlanetSettingTime() throws {
-		let timestamp = "2021-03-15"
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyyy-MM-dd"
-		let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
-		let moonSet = SetTime<Planet>(date: date,
-									  body: .moon,
-									  longitude: 13.41053,
-									  latitude: 52.52437)
-		XCTAssertEqual(moonSet.date?.description, "2021-03-15 21:25:58 +0000")
-		let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
-		let sunsetTokyo = SetTime<Planet>(timeZone: TimeZone(identifier: "Asia/Tokyo")!,
-										 date: dateB,
-										 body: .sun,
-										 longitude: 139.69171,
-										 latitude: 35.6895)
-		XCTAssertEqual(sunsetTokyo.date?.description, "2021-03-16 17:49:34 +0000")
-	}
+    
+    func testPlanetSettingTime() throws {
+        let timestamp = "2021-03-15"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
+        let moonSet = SetTime<Planet>(date: date,
+                                      body: .moon,
+                                      longitude: 13.41053,
+                                      latitude: 52.52437)
+        XCTAssertEqual(moonSet.date?.description, "2021-03-15 21:25:58 +0000")
+        let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
+        let sunsetTokyo = SetTime<Planet>(timeZone: TimeZone(identifier: "Asia/Tokyo")!,
+                                          date: dateB,
+                                          body: .sun,
+                                          longitude: 139.69171,
+                                          latitude: 35.6895)
+        XCTAssertEqual(sunsetTokyo.date?.description, "2021-03-16 17:49:34 +0000")
+    }
 	
 	func testLunarPhase() throws {
 		let date = try Mock.date(from: "2021-03-21T11:11:00-0000")
@@ -326,40 +326,14 @@ final class CelestialBodyTests: XCTestCase {
 		for _ in 0...56 {
 			let moon = Coordinate<Planet>(body: .moon, date: date)
 			formatted.insert(moon.lunarMansion.formatted)
-			date = date.advanced(by: interval)
+            if #available(iOS 13.0, *) {
+                date = date.advanced(by: interval)
+            } 
 		}
 		// Expect a unique description for each mansion.
 		XCTAssertEqual(formatted.count, 28)
 	}
-	
-    func testSpringEquinoxPerformance() {
-        measure {
-            var coordinate = Coordinate<Planet>(body: .sun, date: Date())
-            while coordinate.value > 1.0 {
-                coordinate = Coordinate(body: .sun, date: coordinate.date.addingTimeInterval(60 * 60 * 12))
-            }
-        }
-    }
-	
-    func testAutumnalEquinoxPerformance() {
-        measure {
-            var coordinate = Coordinate<Planet>(body: .sun, date: Date())
-            while Int(coordinate.value) != 180 {
-                coordinate = Coordinate(body: .sun, date: coordinate.date.addingTimeInterval(60 * 60 * 12))
-            }
-        }
-    }
 
-	func testTransit() {
-		XCTAssertNil(Transit(pair: Pair<Planet, Planet>(a: .jupiter, b: .sun), date: Mock.date, orb: 2))
-		measure {
-			let transit = Transit(pair: Pair<Planet, Planet>(a: .jupiter, b: .saturn), date: Mock.date, orb: 10)
-			if let transit = transit {
-				debugPrint("Start Date: \(transit.start) End Date: \(transit.end)")
-			}
-		}
-	}
-	
 	func testSiderealCoordinateEarlyAries() throws {
 		let date = try Mock.date(from: "2021-03-25T01:11:00-0001")
 		let sun = Coordinate<Planet>(body: .sun, date: date)
@@ -384,9 +358,6 @@ final class CelestialBodyTests: XCTestCase {
 		 "testPlanetSettingTime", testPlanetSettingTime,
 		 "testLunarPhase", testLunarPhase,
 		 "testLunarMansion", testLunarMansion,
-		 "testSpringEquinoxPerformance", testSpringEquinoxPerformance,
-		 "testAutumnalEquinoxPerformance", testAutumnalEquinoxPerformance,
-		 "testTransit", testTransit,
 		 "testSiderealCoordinateEarlyAries", testSiderealCoordinateEarlyAries)
 	]
 }
