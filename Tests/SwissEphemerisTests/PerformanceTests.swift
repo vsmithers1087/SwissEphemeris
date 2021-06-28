@@ -123,6 +123,17 @@ final class PerformanceTests: XCTestCase {
         }
     }
     
+    func testBatchCoordinates() throws {
+        measure {
+            BatchCoordinates.execute(for: Planet.moon, start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30)) {
+                let result = $0
+                result.forEach { p in
+                    print(p.formatted)
+                }
+            }
+        }
+    }
+    
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,
          "testHouseCuspsPerformance", testHouseCuspsPerformance,
