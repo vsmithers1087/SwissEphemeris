@@ -123,13 +123,21 @@ final class PerformanceTests: XCTestCase {
         }
     }
     
-    func testBatchCoordinates() throws {
+    func testBatchRequestCoordinates() {
+        let planetsRequest = PlanetsRequest(body: .moon)
         measure {
-            BatchCoordinates.execute(for: Planet.moon, start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30)) {
-                let result = $0
-                result.forEach { p in
-                    print(p.formatted)
-                }
+            planetsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30)) {
+                XCTAssertEqual($0.count, 43200)
+            }
+        }
+    }
+    
+    func testBatchRequestLunations() {
+        let lunationsRequest = LunationsRequest()
+        measure {
+            lunationsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30)) {
+                $0.forEach({ print($0.percentage )})
+                XCTAssertEqual($0.count, 43200)
             }
         }
     }
