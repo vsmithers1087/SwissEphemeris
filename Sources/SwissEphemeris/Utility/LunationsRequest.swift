@@ -8,25 +8,28 @@
 import Foundation
 
 /// A `BatchRequest` for a collection of `Lunation`.
-final class LunationsRequest: BatchRequest {
+final public class LunationsRequest: BatchRequest {
     
-    typealias RequestItem = Lunation
-    let datesThreshold = 478
+    public typealias EphemerisItem = Lunation
+    public let datesThreshold = 478
     
-    func fetch(start: Date, end: Date, _ closure: ([RequestItem]) -> Void) {
-        var lunations = [Lunation]()
+    /// Creates an instance of `LunationsRequest`.
+    public init() {}
+    
+    public func fetch(start: Date, end: Date, interval: TimeInterval = 60.0, _ closure: ([EphemerisItem]) -> Void) {
+        var lunations = [EphemerisItem]()
         let group = DispatchGroup()
-        func execute(batches: [[Date]], _ closure: ([Lunation]) -> Void) {
+        func execute(batches: [[Date]], _ closure: ([EphemerisItem]) -> Void) {
             guard let batch = batches.first else {
                 closure(lunations)
                 return
             }
             group.enter()
-            let c = batch.map { Lunation(date: $0) }
+            let c = batch.map { EphemerisItem(date: $0) }
             lunations.append(contentsOf: c)
             group.leave()
             execute(batches: Array(batches.dropFirst()), closure)
         }
-        execute(batches: dates(for: start, end: end), closure)
+        execute(batches: dates(for: start, end: end, interval: interval), closure)
     }
 }

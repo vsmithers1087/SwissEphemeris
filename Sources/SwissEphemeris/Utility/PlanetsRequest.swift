@@ -7,33 +7,34 @@
 
 import Foundation
 
-///
-final class PlanetsRequest: BatchRequest {
+/// A `BatchRequest` for a collection of `Planet` `Coordinates`.
+final public class PlanetsRequest: BatchRequest {
     
+    /// The `Planet` to request.
     private let body: Planet
-    typealias RequestItem = Coordinate<Planet>
-    let datesThreshold = 478
+    public typealias EphemerisItem = Coordinate<Planet>
+    public let datesThreshold = 478
     
-    /// <#Description#>
-    /// - Parameter body: <#body description#>
-    init(body: Planet) {
+    /// Creates an instance of `PlanetsRequest`.
+    /// - Parameter body: The planet to request.
+    public init(body: Planet) {
         self.body = body
     }
     
-    func fetch(start: Date, end: Date, _ closure: ([RequestItem]) -> Void) {
-        var coordinates = [RequestItem]()
+    public func fetch(start: Date, end: Date, interval: TimeInterval = 60.0, _ closure: ([EphemerisItem]) -> Void) {
+        var coordinates = [EphemerisItem]()
         let group = DispatchGroup()
-        func execute(batches: [[Date]], _ closure: ([RequestItem]) -> Void) {
+        func execute(batches: [[Date]], _ closure: ([EphemerisItem]) -> Void) {
             guard let batch = batches.first else {
                 closure(coordinates)
                 return
             }
             group.enter()
-            let c = batch.map { RequestItem(body: body, date: $0) }
+            let c = batch.map { EphemerisItem(body: body, date: $0) }
             coordinates.append(contentsOf: c)
             group.leave()
             execute(batches: Array(batches.dropFirst()), closure)
         }
-        execute(batches: dates(for: start, end: end), closure)
+        execute(batches: dates(for: start, end: end, interval: interval), closure)
     }
 }
