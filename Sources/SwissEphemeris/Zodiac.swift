@@ -8,7 +8,7 @@
 import Foundation
 
 /// Models the 12 zodiac signs commonly used in astrological systems.
-public enum Zodiac: Int {
+public enum Zodiac: Int, Codable {
     case aries
     case taurus
     case gemini
