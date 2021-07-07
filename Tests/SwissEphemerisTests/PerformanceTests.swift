@@ -123,6 +123,24 @@ final class PerformanceTests: XCTestCase {
         }
     }
     
+    func testBatchRequestPlanetCoordinates() {
+        let planetsRequest = PlanetsRequest(body: .moon)
+        measure {
+            planetsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30)) {
+                XCTAssertEqual($0.count, 43200)
+            }
+        }
+    }
+    
+    func testBatchRequestLunations() {
+        let lunationsRequest = LunationsRequest()
+        measure {
+            lunationsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30), interval: 60 * 60) {
+                XCTAssertEqual($0.count, 720)
+            }
+        }
+    }
+
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,
          "testHouseCuspsPerformance", testHouseCuspsPerformance,
@@ -131,6 +149,8 @@ final class PerformanceTests: XCTestCase {
          "testLunationPerformance", testLunationPerformance,
          "testAspectPerformance", testAspectPerformance,
          "testSpringEquinoxDatePerformance", testSpringEquinoxDatePerformance,
-         "testAutumnalEquinoxDatePerformance", testAutumnalEquinoxDatePerformance)
+         "testAutumnalEquinoxDatePerformance", testAutumnalEquinoxDatePerformance,
+         "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates,
+         "testBatchRequestLunations", testBatchRequestLunations)
     ]
 }

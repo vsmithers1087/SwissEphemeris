@@ -107,6 +107,23 @@ let degree = houses.ascendent.degree
 
 The `enum` types for `Planet`, `Asteroid`, and `LunarNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as stars as fictitious points still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
 
+#### Batch Calculations
+
+To get the most out of the ephemeris, you may need to make a lot of calculations at one time. Making calculations in mass is an expensive operation. and should never be done on the main thread. If you are making hundreds of calculations at one time it is recommended to use a `BatchRequest` for increased performance and to avoid the undefined behavior that results from making numerous calculations concurrently on a single thread.
+
+For example, if I wanted to calculate the exact dates for the phases of the moon I could create a map of the hourly percentage by requesting a `Lunation` for every hour over the next 30 days.
+
+```swift
+let lunationsRequest = LunationsRequest()
+let now = Date()
+let end = Date(),.addingTimeInterval(60 * 60 * 24 * 30)
+lunationsRequest.fetch(start: now, end: end, interval: 60.0 * 60.0) { lunations in
+    /// An array of `Lunation` for every hour between now and 720 hours in the future
+    /// mapped to percentage values.
+    let percentages = lunations.map { $0.percentage }
+}
+```
+
 ### Testing 
 
 #### Accuracy
