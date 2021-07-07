@@ -140,7 +140,7 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
-    
+
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,
          "testHouseCuspsPerformance", testHouseCuspsPerformance,
