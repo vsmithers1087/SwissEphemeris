@@ -140,6 +140,28 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
+    
+    func testWriteEphemerisTable() throws {
+        let request = EphemerisTableRequest()
+        let years: TimeInterval = 1
+        let date = try Mock.date(from: "2021-01-01T01:00:00-0001")
+        let exp = expectation(description: "Create table for one month")
+        request.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30 * 12 * years), interval: 60 * 60) {
+            XCTAssertEqual($0.count, 8640)
+            do {
+                let urls =  FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)
+                var fileURL = urls[0].appendingPathComponent("test-ephe-pages")
+                fileURL = fileURL.appendingPathExtension("json")
+                let encoded = try JSONEncoder().encode($0)
+                try encoded.write(to: fileURL, options: [.atomicWrite])
+                exp.fulfill()
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+           
+        }
+        wait(for: [exp], timeout: 60.0)
+    }
 
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,

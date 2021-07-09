@@ -13,7 +13,7 @@ import CSwissEphemeris
 public struct Lunation {
 	
 	/// Represents common phases of the moon.
-	public enum Phase: Int {
+	public enum Phase: Int, Codable {
 		/// Less than one percent full.
 		case new
 		/// 1 to 50 percent towards full.
@@ -51,7 +51,7 @@ public struct Lunation {
 	/// The percentage full.
 	public let percentage: Double
 	/// Lunation is moving towards full
-	let isWaxing: Bool
+	public let isWaxing: Bool
 	/// The current `Phase`.
 	public var phase: Phase { Phase(lunation: self) }
 	/// The pointer that holds all values.
@@ -80,4 +80,31 @@ public struct Lunation {
 		percentage = pointerPresent[1]
 		isWaxing = percentage > pointerFuture[1]
 	}
+}
+
+// MARK: - Codable Conformance
+
+extension Lunation: Codable {
+    
+    public enum CodingKeys: CodingKey {
+        case date
+        case percentage
+        case isWaxing
+        case phase
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        date = try container.decode(Date.self, forKey: .date)
+        percentage = try container.decode(Double.self, forKey: .percentage)
+        isWaxing = try container.decode(Bool.self, forKey: .isWaxing)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(date, forKey: .date)
+        try container.encode(percentage, forKey: .percentage)
+        try container.encode(isWaxing, forKey: .isWaxing)
+        try container.encode(phase, forKey: .phase)
+    }
 }
