@@ -10,6 +10,8 @@ import Foundation
 /// Models a sidereal coordinate on the Zodiac.
 public struct SiderealCoordinate<T: CelestialBody> {
 	
+    ///
+    public let date: Date
 	/// The coordinate to set
 	private let coordinate: Coordinate<T>
 	/// The ayanamsha value that determines the sidereal position
@@ -19,6 +21,7 @@ public struct SiderealCoordinate<T: CelestialBody> {
 	/// - Parameter coordinate: The coordinate to set.
 	/// - Parameter ayanamshaValue: The ayanamsha value that determines the sidereal position.
 	public init(coordinate: Coordinate<T>, ayanamshaValue: Double = Ayanamsha.current) {
+        self.date = coordinate.date
 		self.coordinate = coordinate
 		self.ayanamshaValue = ayanamshaValue
 	}
