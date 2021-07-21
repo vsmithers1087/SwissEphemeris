@@ -141,25 +141,41 @@ final class PerformanceTests: XCTestCase {
         }
     }
     
-    func testWriteEphemerisTable() throws {
+    func testWriteEphemerisTableMonths() throws {
+        let exp = expectation(description: "Create table for one year")
         let request = EphemerisTableRequest()
-        let years: TimeInterval = 1
-        let date = try Mock.date(from: "2021-01-01T01:00:00-0001")
-        let exp = expectation(description: "Create table for one month")
-        request.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30 * 12 * years), interval: 60 * 60) {
-            XCTAssertEqual($0.count, 8640)
-            do {
-                let urls =  FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)
-                var fileURL = urls[0].appendingPathComponent("test-ephe-pages")
-                fileURL = fileURL.appendingPathExtension("json")
-                let encoded = try JSONEncoder().encode($0)
-                try encoded.write(to: fileURL, options: [.atomicWrite])
-                exp.fulfill()
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-           
+        let group = DispatchGroup()
+
+        let batches: [(Date, Date, String)] = try (6...12).map {
+            let digit = $0 < 10 ? "0\($0)" : String($0)
+            let date = try Mock.date(from: "2021-\(digit)-01T01:00:00-0001")
+            let start = try XCTUnwrap(CalendarHelper.beginningOfMonth(for: date))
+            let end = try XCTUnwrap(CalendarHelper.endOfMonth(for: date))
+            return (start, end, "\(digit)-2021")
         }
+
+        func execute(batches: [(Date, Date, String)]) {
+            print("Starting: \(String(describing: batches.first))")
+            guard let batch = batches.first else {
+                exp.fulfill()
+                return
+            }
+            group.enter()
+            request.fetch(start: batch.0, end: batch.1, interval: 60 * 60) {
+                do {
+                    let urls =  FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)
+                    var fileURL = urls[0].appendingPathComponent(batch.2)
+                    fileURL = fileURL.appendingPathExtension("json")
+                    let encoded = try JSONEncoder().encode($0)
+                    try encoded.write(to: fileURL, options: [.atomicWrite])
+                    group.leave()
+                } catch {
+                    fatalError(error.localizedDescription)
+                }
+            }
+            execute(batches: Array(batches.dropFirst()))
+        }
+        execute(batches: batches)
         wait(for: [exp], timeout: 60.0)
     }
 
@@ -175,4 +191,30 @@ final class PerformanceTests: XCTestCase {
          "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates,
          "testBatchRequestLunations", testBatchRequestLunations)
     ]
+}
+
+///
+final class CalendarHelper {
+    
+    ///
+    private static let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+    
+    
+    /// <#Description#>
+    /// - Parameter date: <#date description#>
+    /// - Returns: <#description#>
+    static func beginningOfYear(for date: Date) -> Date? {
+        calendar.date(from: calendar.dateComponents([.year], from: date))
+    }
+    
+    /// <#Description#>
+    /// - Parameter date: <#date description#>
+    /// - Returns: <#description#>
+    static func beginningOfMonth(for date: Date) -> Date? {
+        calendar.date(from: calendar.dateComponents([.year, .month], from: date))
+    }
+    
+    static func endOfMonth(for date: Date) -> Date? {
+        calendar.date(byAdding: .month, value: 1, to: beginningOfMonth(for: date) ?? Date())
+    }
 }
