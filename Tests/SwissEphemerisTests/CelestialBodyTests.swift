@@ -247,47 +247,54 @@ final class CelestialBodyTests: XCTestCase {
 		let ayanamsha = Ayanamsha()(for: date)
 		XCTAssertEqual((ayanamsha * 100).rounded() / 100, 25.04)
 	}
-	
-	func testPlanetRisingTime() throws {
-		let timestamp = "2021-03-14"
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyyy-MM-dd"
-		let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
-		let sunrise = RiseTime<Planet>(date: date,
-									   body: .sun,
-									   longitude: 13.41053,
-									   latitude: 52.52437,
-									   altitude: 0)
-		XCTAssertEqual(sunrise.date?.description, "2021-03-14 07:22:32 +0000")
-		let sunriseSantaCruz = RiseTime<Planet>(timeZone: TimeZone(identifier: "America/Los_Angeles")!,
-												date: date,
-												body: .sun,
-												longitude: -122.0297222,
-												latitude: 36.9741667,
-												altitude: 0)
-		XCTAssertEqual(sunriseSantaCruz.date?.description, "2021-03-14 07:19:44 +0000")
-		let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-15"))
-		let moonRiseNYC = RiseTime<Planet>(timeZone: TimeZone(identifier: "America/New_York")!,
-										   date: dateB,
-										   body: .moon,
-										   longitude: -73.935242,
-										   latitude: 40.730610,
-										   altitude: 0)
-		XCTAssertEqual(moonRiseNYC.date?.description, "2021-03-15 08:25:55 +0000")
-	}
+    
+    func testPlanetRisingTime() throws {
+        let timestamp = "2021-03-14"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
+        let timeZone = try XCTUnwrap(TimeZone(abbreviation: "CEST"))
+        let sunrise = RiseTime<Planet>(timeZone: timeZone,
+                                       date: date,
+                                       body: .sun,
+                                       longitude: 13.41053,
+                                       latitude: 52.52437,
+                                       altitude: 0)
+        XCTAssertEqual(sunrise.date?.description, "2021-03-14 07:22:32 +0000")
+        let californiaTimeZone = try XCTUnwrap(TimeZone(identifier: "America/Los_Angeles"))
+        let sunriseSantaCruz = RiseTime<Planet>(timeZone: californiaTimeZone,
+                                                date: date,
+                                                body: .sun,
+                                                longitude: -122.0297222,
+                                                latitude: 36.9741667,
+                                                altitude: 0)
+        XCTAssertEqual(sunriseSantaCruz.date?.description, "2021-03-14 07:19:44 +0000")
+        let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-15"))
+        let newYorkTimeZone = try XCTUnwrap(TimeZone(identifier: "America/New_York"))
+        let moonRiseNYC = RiseTime<Planet>(timeZone: newYorkTimeZone,
+                                           date: dateB,
+                                           body: .moon,
+                                           longitude: -73.935242,
+                                           latitude: 40.730610,
+                                           altitude: 0)
+        XCTAssertEqual(moonRiseNYC.date?.description, "2021-03-15 08:25:55 +0000")
+    }
     
     func testPlanetSettingTime() throws {
         let timestamp = "2021-03-15"
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
-        let moonSet = SetTime<Planet>(date: date,
+        let timeZone = try XCTUnwrap(TimeZone(abbreviation: "CEST"))
+        let moonSet = SetTime<Planet>(timeZone: timeZone,
+                                      date: date,
                                       body: .moon,
                                       longitude: 13.41053,
                                       latitude: 52.52437)
         XCTAssertEqual(moonSet.date?.description, "2021-03-15 21:25:58 +0000")
         let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
-        let sunsetTokyo = SetTime<Planet>(timeZone: TimeZone(identifier: "Asia/Tokyo")!,
+        let tokyoTimeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Tokyo"))
+        let sunsetTokyo = SetTime<Planet>(timeZone: tokyoTimeZone,
                                           date: dateB,
                                           body: .sun,
                                           longitude: 139.69171,
