@@ -17,7 +17,6 @@ final class PerformanceTests: XCTestCase {
             for day in 0...1065 {
                 Planet.allCases.forEach {
                     XCTAssertNotNil(Coordinate<Planet>(body: $0, date: date))
-                    print("x")
                     if #available(iOS 13.0, *) {
                         date = date.advanced(by: (60 * 60 * 24) * TimeInterval(day))
                     }
@@ -131,15 +130,6 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
-    
-    func testBatchRequestLunations() {
-        let lunationsRequest = LunationsRequest()
-        measure {
-            lunationsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30), interval: 60 * 60) {
-                XCTAssertEqual($0.count, 720)
-            }
-        }
-    }
 
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,
@@ -150,7 +140,6 @@ final class PerformanceTests: XCTestCase {
          "testAspectPerformance", testAspectPerformance,
          "testSpringEquinoxDatePerformance", testSpringEquinoxDatePerformance,
          "testAutumnalEquinoxDatePerformance", testAutumnalEquinoxDatePerformance,
-         "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates,
-         "testBatchRequestLunations", testBatchRequestLunations)
+         "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates)
     ]
 }

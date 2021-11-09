@@ -21,7 +21,6 @@ public struct SetTime<T: CelestialBody> {
 	
 	/// Creates an instance of `SetTime`.
 	/// - Parameters:
-	///   - timeZone: The `TimeZone` for the set.
 	///   - date: The date to set for the set.
 	///   - body: The celestial body that is setting.
 	///   - longitude: The longitude of the location.
@@ -29,8 +28,7 @@ public struct SetTime<T: CelestialBody> {
 	///   - altitude: The height above sea level. The default value is zero.
 	///   - atmosphericPressure: The level of atmospheric pressure. The default value is zero.
 	///   - atmosphericTemperature: The atmospheric temperature. The default value is zero.
-	public init(timeZone: TimeZone = TimeZone.current,
-				date: Date,
+	public init(date: Date,
 				body: T,
 				longitude: Double,
 				latitude: Double,
@@ -56,6 +54,6 @@ public struct SetTime<T: CelestialBody> {
 						   time,
 						   nil)
 		}
-		self.date = Date(julianDate: time[0]).addingTimeInterval(TimeInterval(timeZone.secondsFromGMT()))
+		self.date = Date(julianDate: time[0])
 	}
 }

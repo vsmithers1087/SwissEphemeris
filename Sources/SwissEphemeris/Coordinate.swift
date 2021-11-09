@@ -73,3 +73,43 @@ public struct Coordinate<T: CelestialBody> {
 extension Coordinate: ZodiacCoordinate {
 	public var value: Double { longitude }
 }
+
+// MARK: - Codable Conformance
+
+extension Coordinate: Codable {
+    
+    public enum CodingKeys: CodingKey {
+        case body
+        case date
+        case longitude
+        case latitude
+        case distance
+        case speedLongitude
+        case speedLatitude
+        case speedDistance
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        body = try container.decode(T.self, forKey: .body)
+        date = try container.decode(Date.self, forKey: .date)
+        longitude = try container.decode(Double.self, forKey: .longitude)
+        latitude = try container.decode(Double.self, forKey: .latitude)
+        distance = try container.decode(Double.self, forKey: .distance)
+        speedLongitude = try container.decode(Double.self, forKey: .speedLongitude)
+        speedLatitude = try container.decode(Double.self, forKey: .speedLatitude)
+        speedDistance = try container.decode(Double.self, forKey: .speedDistance)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(body, forKey: .body)
+        try container.encode(date, forKey: .date)
+        try container.encode(longitude, forKey: .longitude)
+        try container.encode(latitude, forKey: .latitude)
+        try container.encode(distance, forKey: .distance)
+        try container.encode(speedLongitude, forKey: .speedLongitude)
+        try container.encode(speedLatitude, forKey: .speedLatitude)
+        try container.encode(speedDistance, forKey: .speedDistance)
+    }
+}

@@ -29,7 +29,7 @@ public protocol BatchRequest {
 
 // MARK: - Helper Methods
 
-extension BatchRequest {
+public extension BatchRequest {
     
     /// Helper method that prepares a collection of dates so that they can be mapped to the `EphemerisItem`.
     /// - Parameters:
