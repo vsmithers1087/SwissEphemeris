@@ -14,16 +14,13 @@ This project is under the licensing model `a) GNU public license version 2 or la
 
 At the moment the JPL-Ephemeris files that are included are the following. 
 
-| Type        	 | File Numbering               | Time Period  					         |
-|---------------|----------------------------|------------------------------------------------|
-| Planet  		 | seplm60 - seplm132      | 11 Aug 13000 BCE – Jan 16800 CE      |
-|                       | seplm06 - seplm54         |                                                                 |	
-|                       | sepl0 - sepl162               |                                                                       |	
-| Asteroid         | seasm06 - seasm54       |  5401 BCE - 4800 CE – 5399 CE     	        |
-| 		         | seas_06 - seas_48         |    									|
-| Moon             | semom60 - semom132 |  11 Aug 13000 BCE – Jan 16800 CE             |
-|                       | semom06 - semom54    |                                                                        |
-|                       | semo_00 - semo_162     |                                                                       |
+| Body        	| File                       | Time Period   |
+|---------------|----------------------------|---------------|
+| Planet  		| sepl_18.se1      			 | 1800 AD – 2399 AD |                                                                     	
+| Moon          | semo_18.se1      			 | 1800 AD – 2399 AD |  
+| Asteroid      | seas_18.se1                | 1800 AD – 2399 AD |
+
+If you wish to support dates outside of the era **1800 AD – 2399 AD** then please include the additional JPL files in `Sources/SwissEphemeris/JPL`.
 
 ### Setting the Ephemeris Files
 
