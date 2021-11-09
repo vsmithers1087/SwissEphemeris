@@ -17,7 +17,6 @@ final class PerformanceTests: XCTestCase {
             for day in 0...1065 {
                 Planet.allCases.forEach {
                     XCTAssertNotNil(Coordinate<Planet>(body: $0, date: date))
-                    print("x")
                     if #available(iOS 13.0, *) {
                         date = date.advanced(by: (60 * 60 * 24) * TimeInterval(day))
                     }
