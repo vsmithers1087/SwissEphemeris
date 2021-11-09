@@ -131,15 +131,6 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
-    
-    func testBatchRequestLunations() {
-        let lunationsRequest = LunationsRequest()
-        measure {
-            lunationsRequest.fetch(start: date, end: date.addingTimeInterval(60 * 60 * 24 * 30), interval: 60 * 60) {
-                XCTAssertEqual($0.count, 720)
-            }
-        }
-    }
 
     static var allTests = [
         ("testCoordinatePerformance",testCoordinatePerformance,
@@ -150,7 +141,6 @@ final class PerformanceTests: XCTestCase {
          "testAspectPerformance", testAspectPerformance,
          "testSpringEquinoxDatePerformance", testSpringEquinoxDatePerformance,
          "testAutumnalEquinoxDatePerformance", testAutumnalEquinoxDatePerformance,
-         "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates,
-         "testBatchRequestLunations", testBatchRequestLunations)
+         "testBatchRequestPlanetCoordinates", testBatchRequestPlanetCoordinates)
     ]
 }

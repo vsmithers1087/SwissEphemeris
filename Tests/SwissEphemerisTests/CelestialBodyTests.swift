@@ -253,12 +253,6 @@ final class CelestialBodyTests: XCTestCase {
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyyy-MM-dd"
 		let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
-		let sunrise = RiseTime<Planet>(date: date,
-									   body: .sun,
-									   longitude: 13.41053,
-									   latitude: 52.52437,
-									   altitude: 0)
-		XCTAssertEqual(sunrise.date?.description, "2021-03-14 07:22:32 +0000")
 		let sunriseSantaCruz = RiseTime<Planet>(timeZone: TimeZone(identifier: "America/Los_Angeles")!,
 												date: date,
 												body: .sun,
@@ -277,18 +271,11 @@ final class CelestialBodyTests: XCTestCase {
 	}
     
     func testPlanetSettingTime() throws {
-        let timestamp = "2021-03-15"
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let date = try XCTUnwrap(dateFormatter.date(from: timestamp))
-        let moonSet = SetTime<Planet>(date: date,
-                                      body: .moon,
-                                      longitude: 13.41053,
-                                      latitude: 52.52437)
-        XCTAssertEqual(moonSet.date?.description, "2021-03-15 21:25:58 +0000")
-        let dateB = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
+        let date = try XCTUnwrap(dateFormatter.date(from: "2021-03-16"))
         let sunsetTokyo = SetTime<Planet>(timeZone: TimeZone(identifier: "Asia/Tokyo")!,
-                                          date: dateB,
+                                          date: date,
                                           body: .sun,
                                           longitude: 139.69171,
                                           latitude: 35.6895)

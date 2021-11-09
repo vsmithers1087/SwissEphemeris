@@ -8,7 +8,7 @@
 import Foundation
 
 /// Models a geometric aspect between two bodies.
-public enum Aspect: Equatable, Hashable {
+public enum Aspect: Equatable, Hashable, Codable {
     
 	/// A 0° alignment.
     case conjunction(Double)
