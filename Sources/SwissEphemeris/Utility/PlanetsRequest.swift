@@ -20,7 +20,28 @@ final public class PlanetsRequest: BatchRequest {
     public init(body: Planet) {
         self.body = body
     }
+	
+	@available(macOS 12.0.0, *)
+	public func fetch(start: Date, end: Date, interval: TimeInterval = 60.0) async -> [EphemerisItem] {
+		var coordinates = [EphemerisItem]()
+		var dates = dates(for: start, end: end, interval: interval)
+		let stream = AsyncStream<[EphemerisItem]> {
+			guard !dates.isEmpty else { return nil }
+			do {
+				try await Task.sleep(nanoseconds: 1)
+			} catch {
+				return nil
+			}
+			let batch = dates.removeFirst()
+			return batch.map { EphemerisItem(body: self.body, date: $0) }
+		}
+		for await items in stream {
+			coordinates.append(contentsOf: items)
+		}
+		return coordinates
+	}
     
+	@available(*, deprecated, renamed: "fetch(start:end:interval:_:)")
     public func fetch(start: Date, end: Date, interval: TimeInterval = 60.0, _ closure: ([EphemerisItem]) -> Void) {
         var coordinates = [EphemerisItem]()
         let group = DispatchGroup()

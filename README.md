@@ -106,19 +106,16 @@ The `enum` types for `Planet`, `Asteroid`, and `LunarNode` correspond to IPL num
 
 #### Batch Calculations
 
-To get the most out of the ephemeris, you may need to make a lot of calculations at one time. Making calculations in mass is an expensive operation. and should never be done on the main thread. If you are making hundreds of calculations at one time it is recommended to use a `BatchRequest` for increased performance and to avoid the undefined behavior that results from making numerous calculations concurrently on a single thread.
+To get the most out of the ephemeris, you may need to make a lot of calculations at one time. Making calculations in mass is an expensive operation. and should never be done on the main thread. If you are making hundreds of calculations at one time it is recommended to use a `BatchRequest` for increased performance and to avoid the undefined behavior that results from making a high number of calculations concurrently.
 
-For example, if I wanted to calculate the exact dates for the phases of the moon I could create a map of the hourly percentage by requesting a `Lunation` for every hour over the next 30 days.
+For example, to calculate the exact coordinates for the sun for a period of time:
 
 ```swift
-let lunationsRequest = LunationsRequest()
+let request = PlanetsRequest(body: .sun)
 let now = Date()
-let end = Date(),.addingTimeInterval(60 * 60 * 24 * 30)
-lunationsRequest.fetch(start: now, end: end, interval: 60.0 * 60.0) { lunations in
-    /// An array of `Lunation` for every hour between now and 720 hours in the future
-    /// mapped to percentage values.
-    let percentages = lunations.map { $0.percentage }
-}
+let end = now.addingTimeInterval(60 * 60 * 24 * 30)
+// Asynchronously returns an array of `.sun` `Coordinate`s for every hour between now and 720 hours in the future.
+let batchCoordinates = await request.fetch(start: now, end: end, interval: 60.0 * 60.0)
 ```
 
 ### Testing 
