@@ -1,5 +1,5 @@
 //
-//  Astroid.swift
+//  Asteroid.swift
 //  
 //
 //  Created by Vincent Smithers on 13.02.21.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Models select Astroids available in the IPL.
-public enum Astroid: Int32 {
+/// Models select Asteroids available in the IPL.
+public enum Asteroid: Int32 {
 	case chiron = 15
 	case pholus
 	case ceres
@@ -19,7 +19,7 @@ public enum Astroid: Int32 {
 
 // MARK: - CelestialBody Conformance
 
-extension Astroid: CelestialBody {
+extension Asteroid: CelestialBody {
 	public var value: Int32 {
 		rawValue
 	}
