@@ -112,4 +112,8 @@ extension Coordinate: Codable {
         try container.encode(speedLatitude, forKey: .speedLatitude)
         try container.encode(speedDistance, forKey: .speedDistance)
     }
+
+    public func longitudeDelta<Body>(other: Coordinate<Body>) -> Double {
+        return abs(longitude - other.longitude)
+    }
 }
