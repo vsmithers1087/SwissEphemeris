@@ -33,11 +33,11 @@ public struct Coordinate<T: CelestialBody> {
 	/// The pointer for the fixed star name.
 	private var charPointer = UnsafeMutablePointer<CChar>.allocate(capacity: 1)
 	
-	/// Creates a `Coordinate`.
-	/// - Parameters:
-	///   - body: The `CelestialBody` for the placement.
-	///   - date: The date for the location of the coordinate.
-	public init(body: T, date: Date) {
+    /// Creates a `Coordinate`.
+    /// - Parameters:
+    ///   - body: The `CelestialBody` for the placement.
+    ///   - date: The date for the location of the coordinate.
+    public init(body: T, date: Date) {
         defer {
             pointer.deinitialize(count: 6)
             pointer.deallocate()
@@ -46,26 +46,35 @@ public struct Coordinate<T: CelestialBody> {
                 charPointer.deallocate()
             }
         }
-		self.body = body
-		self.date = date
-		switch body.value {
-		case let value as Int32:
+        self.body = body
+        self.date = date
+        let isSouthNode = (body is LunarNode && body as! LunarNode == .southNode)
+        switch body.value {
+        case let value as Int32:
             pointer.initialize(repeating: 0, count: 6)
-			swe_calc_ut(date.julianDate(), value, SEFLG_SPEED, pointer, nil)
-		case let value as String:
-			charPointer.initialize(from: value, count: value.count)
-			charPointer = strdup(value)
-			swe_fixstar2(charPointer, date.julianDate(), SEFLG_SPEED, pointer, nil)
-		default:
-			break
-		}
-		longitude = pointer[0]
-		latitude = pointer[1]
-		distance = pointer[2]
-		speedLongitude = pointer[3]
-		speedLatitude = pointer[4]
-		speedDistance = pointer[5]
-	}
+            let calcValue = isSouthNode ? Int32(LunarNode.trueNode.rawValue) : value
+            swe_calc_ut(date.julianDate(), calcValue, SEFLG_SPEED, pointer, nil)
+        case let value as String:
+            charPointer.initialize(from: value, count: value.count)
+            charPointer = strdup(value)
+            swe_fixstar2(charPointer, date.julianDate(), SEFLG_SPEED, pointer, nil)
+        default:
+            break
+        }
+
+        var longDegrees = 0.0
+        if isSouthNode {
+            let adjDegrees = pointer[0] + 180.0
+            longDegrees = adjDegrees >= 360.0 ? (pointer[0] - 180.0) : adjDegrees
+        }
+
+        longitude = isSouthNode ? longDegrees : pointer[0]
+        latitude = pointer[1]
+        distance = pointer[2]
+        speedLongitude = pointer[3]
+        speedLatitude = pointer[4]
+        speedDistance = pointer[5]
+    }
 }
 
 // MARK: - ZodiacCoordinate Conformance
