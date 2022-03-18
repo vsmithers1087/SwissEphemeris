@@ -10,8 +10,9 @@ import Foundation
 /// Models the lunar nodes.
 /// The the raw `Int32` values map to the IPL bodies.
 public enum LunarNode: Int32 {
-	case meanNode = 10
-	case trueNode
+    case meanNode = 10
+    case trueNode
+    case southNode = 24
 }
 
 // MARK: - CelestialBody Conformance
