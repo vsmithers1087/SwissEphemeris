@@ -30,24 +30,24 @@ final class CelestialBodyTests: XCTestCase {
 		XCTAssertEqual(Int(moonCoordinate.second), 16)
 	}
 	
-	func testAstroids() throws {
+	func testAsteroids() throws {
 		let date = try XCTUnwrap(Mock.date(from: "2021-03-01T12:31:00-0800"))
-		let chiron = Coordinate<Astroid>(body: .chiron, date: date)
+		let chiron = Coordinate<Asteroid>(body: .chiron, date: date)
 		XCTAssertEqual(Int(chiron.degree), 7)
 		XCTAssertEqual(chiron.sign, .aries)
-		let pholus = Coordinate<Astroid>(body: .pholus, date: date)
+		let pholus = Coordinate<Asteroid>(body: .pholus, date: date)
 		XCTAssertEqual(Int(pholus.degree), 5)
 		XCTAssertEqual(pholus.sign, .capricorn)
-		let ceres = Coordinate<Astroid>(body: .ceres, date: date)
+		let ceres = Coordinate<Asteroid>(body: .ceres, date: date)
 		XCTAssertEqual(Int(ceres.degree), 3)
 		XCTAssertEqual(ceres.sign, .aries)
-		let pallas = Coordinate<Astroid>(body: .pallas, date: date)
+		let pallas = Coordinate<Asteroid>(body: .pallas, date: date)
 		XCTAssertEqual(Int(pallas.degree), 28)
 		XCTAssertEqual(pallas.sign, .aquarius)
-		let juno = Coordinate<Astroid>(body: .juno, date: date)
+		let juno = Coordinate<Asteroid>(body: .juno, date: date)
 		XCTAssertEqual(Int(juno.degree), 19)
 		XCTAssertEqual(juno.sign, .sagittarius)
-		let vesta = Coordinate<Astroid>(body: .vesta, date: date)
+		let vesta = Coordinate<Asteroid>(body: .vesta, date: date)
 		XCTAssertEqual(Int(vesta.degree), 15)
 		XCTAssertEqual(vesta.sign, .virgo)
 	}
@@ -338,7 +338,7 @@ final class CelestialBodyTests: XCTestCase {
 		("testSunZodiacCoordinate",testSunZodiacCoordinate,
 		 "testMoonSiderealCoordinate", testMoonSiderealCoordinate,
 		 "testPlanets", testPlanets,
-		 "testAstroids", testAstroids,
+		 "testAsteroids", testAsteroids,
 		 "testZodiac", testZodiac,
 		 "testLunarNodes", testLunarNodes,
 		 "testAscendent", testAscendent,
