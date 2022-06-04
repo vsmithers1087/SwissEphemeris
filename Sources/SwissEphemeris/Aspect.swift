@@ -29,7 +29,7 @@ public enum Aspect: Equatable, Hashable, Codable {
     public init?<T, U>(pair: Pair<T, U>, date: Date, orb: Double = 10.0) {
 		let degreeA = Coordinate(body: pair.a, date: date)
 		let degreeB = Coordinate(body: pair.b, date: date)
-		self.init(a: degreeA.value, b: degreeB.value, orb: orb)
+		self.init(a: degreeA.longitude, b: degreeB.longitude, orb: orb)
 	}
 	
 	/// Creates an optional `Aspect` between two degrees. If there is no aspect within the orb, then this initializer will return `nil`.

@@ -8,18 +8,16 @@
 import Foundation
 
 /// Models the point between two houses
-public struct Cusp {
+public struct Cusp: ZodiacMappable {
 
-	/// The degree of the coordinate
-	public let value: Double
+	public let tropical: ZodiacCoordinate
+	public let sidereal: ZodiacCoordinate
 
 	/// Creates a `Cusp`.
 	/// - Parameter value: The latitudinal degree to set.
-	public init(value: Double) {
-		self.value = value
+	/// - Parameter date: The `Date` needed to map to the zodiacs.
+	public init(value: Double, date: Date) {
+		tropical = ZodiacCoordinate(value: value)
+		sidereal = ZodiacCoordinate(value: value, offset: Ayanamsha()(for: date))
 	}
 }
-
-// MARK: - ZodiacCoordinate Conformance
-
-extension Cusp: ZodiacCoordinate {}
