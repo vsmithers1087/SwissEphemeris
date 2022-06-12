@@ -59,7 +59,7 @@ moonCoordinate.speedLatitude
 // The speed in distance (AU/day).
 moonCoordinate.speedDistance
 ```
-Astrological information about the tropical zodiacal location of a celestial body is also available from the same `Coordinate` type.
+Astrological information about the tropical and sidereal zodiacal locations of a celestial body is also available from the same `Coordinate` type through the `tropical` and `sidereal` properties.
 
 ```swift
 // Date for 12.14.2019 13:39 UT/GMT
@@ -67,11 +67,11 @@ let date = Date(timeIntervalSince1970: 598023482.487818)
 // Astronomical and astrological information for the sun on December 14th 2019.
 let sunCoordinate = Coordinate<Planet>(planet: .sun, date: date)
 // This will return 21 Degrees Sagittarius ♐︎ 46' 49''.
-sunCoordinate.formatted
+sunCoordinate.tropical.formatted
 // It is also possible to get the degree, minute and second as properties of the Coordinate.
-let degree = sunCoordinate.degree
-let minute = sunCoordinate.minute
-let second = sunCoordinate.second
+let degree = sunCoordinate.tropical.degree
+let minute = sunCoordinate.tropical.minute
+let second = sunCoordinate.tropical.second
 ```
 #### Astrological Aspect
 
@@ -79,30 +79,30 @@ To create an aspect between two `CelestialBody`  types use  `Aspect`.  `Transit`
 
 ```swift
 // Create a pair of celestial bodies.
-let moonTrueNode = Pair<Planet, LunarNode>(a: .moon, b: .trueNode)
+let moonTrueNode = Pair<Planet, LunarNorthNode>(a: .moon, b: .trueNode)
 // Transit contains start and end date properties.
 let transit = Transit(pair: moonTrueNode, date: Date(), orb: 8.0)
 ```
 ####  Astrological Houses
 
-To get the house layout for a date, location, and house system create a `HouseCusps`. The `HouseSystem` determines the type of astrological house system that is set. All house `Cusp` properties can be used to create an `Aspect` with a `CelestialBody`.
+To get the house layout for a date, location, and house system create a `HouseCusps`. The `HouseSystem` determines the type of astrological house system that is set. All house `Cusp` properties can be used to create an `Aspect` with a `CelestialBody`. Zodiacal information for each cusp is available through the `tropical` and `sidereal` properties.
 
 ```swift
-/// Create a date and location
+// Create a date and location
 let now = Date()
 let latitude: Double = 37.5081153
 let longitude: Double = -122.2854528
-/// All house cusps, Ascendent, and MC are properties on `houses`.
+// All house cusps, Ascendent, and MC are properties on `houses`.
 let houses = HouseCusps(date: date, latitude: latitude, longitude: longitude, houseSystem: .placidus)
-/// Get the formatted astrological position.
-let ascendentFormatted = houses.ascendent.formatted
-/// Or the precise degree
-let degree = houses.ascendent.degree
+// Get the formatted sidereal astrological position.
+let ascendentFormatted = houses.ascendent.sidereal.formatted
+// Or the precise degree for the sidereal zodiac.
+let degree = houses.ascendent.sidereal.degree
 ```
 
 #### IPL Numbering
 
-The `enum` types for `Planet`, `Asteroid`, and `LunarNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as stars as fictitious points still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
+The `enum` types for `Planet`, `Asteroid`, and `LunarNorthNode` correspond to IPL numbers in the ephemeris. Other celestial bodies such as stars as fictitious points still need to be added. The type numbering is not comprehensive, but can be easily extended to match the celestial body that is not available in the package. All of the types conform to the `CelestialBody` protocol which makes it so different categories of celestial points can be mapped to the tropical zodiac both in aspect and position. 
 
 #### Batch Calculations
 
