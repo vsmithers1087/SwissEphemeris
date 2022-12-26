@@ -22,17 +22,17 @@ public struct ZodiacCoordinate: Codable {
 	/// The second value for the degree.
 	public var second: Double { minute.truncatingRemainder(dividingBy: 1) * 60  }
 	
-	/// An internal initializer for creating a `ZodiacCoordinate`.
+	/// An initializer for creating a `ZodiacCoordinate`.
 	/// - Parameter value: Must be between 0-360.
-	init(value: Double) {
+	public init(value: Double) {
 		self.value = value
 	}
 	
-	/// An internal initializer for creating a `ZodiacCoordinate` with an offset.
+	/// An initializer for creating a `ZodiacCoordinate` with an offset.
 	/// - Parameters:
 	///   - value: Must be between 0-360.
 	///   - offset: The offset to set.
-	init(value: Double, offset: Double) {
+	public init(value: Double, offset: Double) {
 		self.value = value - offset >= 0 ? value - offset : 360.0 + value - offset
 	}
 }
